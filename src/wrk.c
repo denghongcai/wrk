@@ -197,15 +197,15 @@ int main(int argc, char **argv) {
 
     if(cfg.ctx){
         printf("TLS new conn %d reused %d miss %d finished conn %d sess_cb_hit %d renegotiation %d timeout %d full remove %d \n",
-                cfg.ctx->stats.sess_connect,
-                cfg.ctx->stats.sess_hit,
-                cfg.ctx->stats.sess_miss,
-                cfg.ctx->stats.sess_connect_good,
-                cfg.ctx->stats.sess_cb_hit,
-                cfg.ctx->stats.sess_connect_renegotiate,
-                cfg.ctx->stats.sess_timeout,
-                cfg.ctx->stats.sess_cache_full
-                );
+               SSL_CTX_sess_connect(cfg.ctx),
+               SSL_CTX_sess_number(cfg.ctx),
+               SSL_CTX_sess_hits(cfg.ctx),
+               SSL_CTX_sess_misses(cfg.ctx),
+               SSL_CTX_sess_connect_good(cfg.ctx),
+               SSL_CTX_sess_cb_hits(cfg.ctx),
+               SSL_CTX_sess_connect_renegotiate(cfg.ctx),
+               SSL_CTX_sess_timeouts(cfg.ctx),
+               SSL_CTX_sess_cache_full(cfg.ctx));
     }
 
     if (script_has_done(L)) {
