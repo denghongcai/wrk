@@ -512,6 +512,7 @@ static struct option longopts[] = {
     { "timeout",     required_argument, NULL, 'T' },
     { "reuse",       no_argument,       NULL, 'r' },
     { "no_keepalive",no_argument,       NULL, 'k' },
+    { "all_time",    no_argument,       NULL, 'a' },
     { "help",        no_argument,       NULL, 'h' },
     { "version",     no_argument,       NULL, 'v' },
     { NULL,          0,                 NULL,  0  }
