@@ -16,6 +16,7 @@ static struct config {
     char    *host;
     bool     tls_session_reuse;
     bool     no_keep_alive;
+    bool     all_time;
     char    *script;
     SSL_CTX *ctx;
 } cfg;
@@ -51,6 +52,7 @@ static void usage() {
            "    -t, --threads     <N>  Number of threads to use   \n"
            "    -r, --reuse       <R>  Enable tls session reuse   \n"
            "    -k, --no_keepalive <K> Disable http keep-alive       \n"
+           "    -a, --all_time     <A> Calculate all time start from connect  \n"
            "                                                      \n"
            "    -s, --script      <S>  Load Lua script file       \n"
            "    -H, --header      <H>  Add header to request      \n"
@@ -263,6 +265,10 @@ static int connect_socket(thread *thread, connection *c) {
     flags = fcntl(fd, F_GETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
+    if (cfg.all_time) {
+        c->start = time_us();
+    }
+
     if (connect(fd, addr->ai_addr, addr->ai_addrlen) == -1) {
         if (errno != EINPROGRESS) goto error;
     }
@@ -424,7 +430,9 @@ static void socket_writeable(aeEventLoop *loop, int fd, void *data, int mask) {
         if (cfg.dynamic) {
             script_request(thread->L, &c->request, &c->length);
         }
-        c->start   = time_us();
+        if (!cfg.all_time) {
+            c->start = time_us();
+        }
         c->pending = cfg.pipeline;
     }
 
@@ -552,6 +560,9 @@ static int parse_args(struct config *cfg, char **url, struct http_parser_url *pa
                 break;
             case 'k':
                 cfg->no_keep_alive=true;
+                break;
+            case 'a':
+                cfg->all_time=true;
                 break;
             case 'h':
             case '?':
