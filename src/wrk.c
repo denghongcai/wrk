@@ -421,10 +421,8 @@ static void socket_writeable(aeEventLoop *loop, int fd, void *data, int mask) {
 
     if (c->delayed) {
         uint64_t delay = script_delay(thread->L);
-        if (!cfg.all_time) {
-            if (cfg.all_time) {
-                c->start = c->start + delay;
-            }
+        if (cfg.all_time) {
+            c->start = c->start + delay;
         }
         aeDeleteFileEvent(loop, fd, AE_WRITABLE);
         aeCreateTimeEvent(loop, delay, delay_request, c, NULL);
